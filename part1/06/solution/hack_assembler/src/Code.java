@@ -5,12 +5,15 @@ public class Code {
     private HashMap<String, String> compMap;
     private HashMap<String, String> jumpMap;
 
+    private  HashMap<Integer, Integer> destMap;
+
     private int curr;
 
 
     public Code() {
         initCompMap();
         initJumpMap();
+        initDestMap();
         curr = 16;
     }
 
@@ -38,6 +41,13 @@ public class Code {
         }
     }
 
+
+    private void initDestMap() {
+        destMap = new HashMap<>();
+        for (int i = 0; i < 8; i ++) {
+            destMap.put(i, i);
+        }
+    }
 
     private void printJumpMap() {
         System.out.print("jumpMap\n");
@@ -78,7 +88,7 @@ public class Code {
             }
         }
 
-        return toBinaryStr(num, 3);
+        return toBinaryStr(destMap.get(num), 3);
     }
 
     public String getJbits(String jump) {

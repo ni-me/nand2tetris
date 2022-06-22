@@ -43,7 +43,6 @@ public class Parser {
         }
     }
 
-
     private void labelParser(String s) {
         label = s.substring(1, s.length() - 1);
     }
