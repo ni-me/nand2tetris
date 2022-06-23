@@ -2,6 +2,8 @@ import java.io.*;
 import java.util.ArrayList;
 
 public class HackAssembler {
+    private final static String sourceExtened = ".asm";
+    private final static String objectExtend = ".hack";
 
     // clear white space (comment, space...)  and label, update symbol table
     private static ArrayList<Instruction> firstPass(String[] lines, SymbolTable symbolTable) {
@@ -83,25 +85,42 @@ public class HackAssembler {
         }
     }
 
-
-    public static void main(String[] args) {
-        SymbolTable symbolTable = new SymbolTable();
-        Code code = new Code();
-        String sourcePath = null;
-
-        try {
-            sourcePath = args[0];
-        } catch (Exception e) {
-            System.out.println("Please type source file path, for example: java HackAssembler ./source.asm");
-        }
-
-        String objectPath = sourcePath.substring(0, sourcePath.length() - 4) + ".hack";
+    private static void assembly(String sourcePath, SymbolTable symbolTable, Code code) {
+        String objectPath = sourcePath.substring(0, sourcePath.length() - sourceExtened.length()) + objectExtend;
 
         String[] sourceFileContent = read(sourcePath);
 
         ArrayList<Instruction> instructions = firstPass(sourceFileContent, symbolTable);
         String[] codeStrings = secondPass(instructions, symbolTable, code);
-
         write(objectPath, codeStrings);
+
+    }
+
+    public static void main(String[] args) {
+        SymbolTable symbolTable = new SymbolTable();
+        Code code = new Code();
+
+        try {
+            for (String sourcePath : args) {
+                File file = new File(sourcePath);
+
+                if (file.isFile()) {
+                    assembly(file.getPath(), symbolTable, code);
+                } else if (file.isDirectory()) {
+                    File[] files = file.listFiles();
+                    for (File f : files) {
+                        String path = f.getPath();
+                        int length = sourceExtened.length();
+                        if (path.substring(path.length() - length).equals(sourceExtened)) {
+                            assembly(path, symbolTable, code);
+                        }
+                    }
+                }
+            }
+        } catch (NullPointerException e) {
+            System.out.println("Please type source file path, for example: java HackAssembler ./source.asm");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
